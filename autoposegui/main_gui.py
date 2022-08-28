@@ -130,7 +130,7 @@ def main_gui():
     graph.bind('<Button-2>', '+RIGHT CLICK+')
     listbox = window['Bodypart']
     dragging = False
-    start_point = end_point = prior_rect = None
+    start_point = end_point = None
 
     # Code to Read Files ############################################################################
 
@@ -375,7 +375,7 @@ def main_gui():
                 if event == '+RIGHT CLICK+':
                     x, y = values["Graph"]
                     start_point = (x, y)
-                    prior_rect = graph.draw_point(start_point, 6, color)
+                    graph.draw_point(start_point, 6, color)
                     bpt = window['Bodypart'].get()[0]
                     if animal_id == config['animals'][1]:
                         bodypoints2[bpt] = start_point
