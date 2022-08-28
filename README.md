@@ -8,3 +8,14 @@ AutoPoseMapper should help fix most of the errors created by maDLC and SLEAP.
 The GUI was built using [PySimpleGUI](https://www.pysimplegui.org/en/latest/) 
 so refer to the website if you have any installation issues.
 
+## Installation:
+1. Create a new conda environment <code>conda create -n apm python=3.7 -y </code>
+2. Activate desired conda environment <code> conda activate apm </code>
+3. Download the repository and unzip contents. Open terminal and 
+navigate to unzipped folder containing requirements.txt.
+4. Run   
+<code>
+pip install -r requirements.txt  
+</code>  
+
+
