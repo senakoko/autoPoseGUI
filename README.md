@@ -18,4 +18,9 @@ navigate to unzipped folder containing requirements.txt.
 pip install -r requirements.txt  
 </code>  
 
-
+## Running the GUI
+Make sure you are in the autoposegui folder
+```commandline
+cd autoposegui
+python main_gui.py
+```
