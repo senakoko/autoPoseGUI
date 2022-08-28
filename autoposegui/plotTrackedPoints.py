@@ -3,6 +3,12 @@ import numpy as np
 
 
 def create_body_indices(bodyparts, skeleton):
+    """
+    Create indices to plot the tracked points on the animals in the frame
+    :param bodyparts: the body parts to plot the points for
+    :param skeleton: the defined outline to plot for the animals
+    :return:
+    """
     bpts_val = {}
     for i, bpts in enumerate(bodyparts):
         bpts_val[bpts] = i
@@ -14,6 +20,15 @@ def create_body_indices(bodyparts, skeleton):
 
 
 def plot_tracked_points(image, h5, frame_number, skeleton, dot_size=4):
+    """
+    Plot the tracked body points on the image
+    :param image: the frame
+    :param h5: the h5 data (not file) with the tracked points
+    :param frame_number: the frame number to plot the tracked points
+    :param skeleton: the defined skeleton for the tracked points
+    :param dot_size: the size for the tracked points to plot
+    :return: an image with plotted skeleton points
+    """
     scorer = h5.columns.get_level_values('scorer').unique().item()
     bodyparts = h5.columns.get_level_values('bodyparts').unique().to_list()
     individuals = h5.columns.get_level_values('individuals').unique().to_list()

@@ -2,6 +2,15 @@ import numpy as np
 
 
 def relabel_points(data, config, width, scale_factor, canvas_width):
+    """
+    Relabel badly tracked body points again
+    :param data: the new tracked points from the relabeling
+    :param config: the configuration data (not the filepath)
+    :param width: the width of the image
+    :param scale_factor: the fraction used to resize the frames
+    :param canvas_width: the width of the canvas used for the main GUI
+    :return: new tracked points adjusted to the actual dimensions for the video
+    """
     animals = config['animals']
     body_parts = config['body_parts']
 

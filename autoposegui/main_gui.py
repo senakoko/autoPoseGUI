@@ -14,6 +14,7 @@ from propagatePreviousFrame import propagate_previous_frame
 
 
 def main_gui():
+    """ GUI MainFrame"""
     sg.theme('DarkAmber')
     parameters = set_run_parameters()
     scale_factor = parameters.scale_factor
@@ -153,6 +154,7 @@ def main_gui():
                 break
             break
 
+        # Load the video file
         if event == 'Files_Vid':
             try:
                 vid_filename = values["Files_Vid"]
@@ -161,6 +163,7 @@ def main_gui():
                 slider = window['Frame_Slider']
                 slider.Range = (0, length)
                 slider.Update(range=(0, length))
+                # Load the last frame from when the GUI was closed in the previous session
                 if last_frame_path.exists():
                     frame_number = last_frame_data[vid_filename]
                     cap.set(1, frame_number)
@@ -168,6 +171,7 @@ def main_gui():
                 else:
                     ret, image = cap.read()
                 slider.Update(value=frame_number)
+                # Resize the image
                 image = process_frame(image, scale_factor=scale_factor)
                 imgbytes = cv2.imencode('.png', image)[1].tobytes()
                 window["Graph"].draw_image(data=imgbytes, location=(0, parameters.canvas_width))
@@ -178,11 +182,13 @@ def main_gui():
             except KeyError:
                 sg.popup_error('Select a Video', font=parameters.error_font)
 
+        # Load the H5 file and plot it
         if event == 'Files_H5':
             try:
                 h5_filename = values["Files_H5"]
                 h5 = pd.read_hdf(h5_filename)
                 skeleton = config['skeleton']
+                # Rescale the loaded image to the normal size before plotting the points. Only done here
                 image = process_frame(image, scale_factor=int(1 / scale_factor))
                 image = plot_tracked_points(image, h5, frame_number, skeleton)
                 image = process_frame(image)
@@ -192,6 +198,7 @@ def main_gui():
             except UnboundLocalError:
                 sg.popup_error('Load the Video first', font=parameters.error_font)
 
+        # Sliding through the video
         if event == 'Frame_Slider':
             try:
                 frame_number = int(values['Frame_Slider'])
@@ -220,6 +227,7 @@ def main_gui():
             except UnboundLocalError:
                 sg.popup_error('Load the Video', font=parameters.error_font)
 
+        # Moving forward through the video one frame at a time.
         if event == 'Next_Frame' or event.startswith('Right'):
             try:
                 frame_number += 1
@@ -250,6 +258,7 @@ def main_gui():
             except AttributeError:
                 sg.popup_error('Loaded the Last Frame', font=parameters.error_font)
 
+        # Moving Backward through the video one frame at a time.
         if event == 'Previous_Frame' or event.startswith('Left'):
             try:
                 frame_number -= 1
@@ -278,6 +287,7 @@ def main_gui():
             except UnboundLocalError:
                 sg.popup_error('Load the Video first', font=parameters.error_font)
 
+        # Going to a specific frame in the video
         if event == 'Go_To':
             try:
                 val_num = values['Go_To']
@@ -309,6 +319,7 @@ def main_gui():
             except ValueError:
                 sg.popup_error('Number MUST BE Positive', font=parameters.error_font)
 
+        # Swap the labels for mis-tracked points on the animals for a single frame
         if event == 'Swap_Labels':
             try:
                 h5_filename = values["Files_H5"]
@@ -323,6 +334,8 @@ def main_gui():
             except UnboundLocalError:
                 sg.popup_error('Load the Video first', font=parameters.error_font)
 
+        # Swap the labels for mis-tracked points on the animals for a sequence of frames.
+        # Only works for two tracked animals.
         if event == 'Swap_Sequence':
             try:
                 h5_filename = values["Files_H5"]
@@ -343,14 +356,17 @@ def main_gui():
             except UnboundLocalError:
                 sg.popup_error('Load the Video first', font=parameters.error_font)
 
+        # Get the frame number to start the sequence swap
         if event == 'Mark_Start':
             from_number = window['From_Frame']
             from_number.Update(value=frame_number)
 
+        # Get the frame number to end the sequence swap
         if event == 'Mark_End':
             end_number = window['To_Frame']
             end_number.Update(value=frame_number)
 
+        # Relabel badly tracked points again
         if event == 'Relabel_Animals':
             try:
                 cap.set(1, frame_number)
@@ -365,6 +381,7 @@ def main_gui():
             except UnboundLocalError:
                 sg.popup_error('You need to load a frame')
 
+        # Relabeling the points
         if values['Animals']:
             animal_id = window['Animals'].get()
             if animal_id == config['animals'][1]:
@@ -390,6 +407,8 @@ def main_gui():
                         index = 0
                     listbox.update(set_to_index=[index], scroll_to_index=index)
 
+        # Adjust the relabeled points to the actual dimensions of the image.
+        # Update the H5 file with the relabeled points and replot it
         if event == 'Done_Labeling':
             try:
                 cap.set(1, frame_number)
@@ -405,6 +424,7 @@ def main_gui():
             except UnboundLocalError:
                 sg.popup_error('Load the Video first', font=parameters.error_font)
 
+        # Propagate rightly tracked body points from the previous image to the current one
         if event == "Propagate":
             try:
                 propagate_previous_frame(h5, frame_number, h5_filename)

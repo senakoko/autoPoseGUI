@@ -2,6 +2,14 @@ import pandas as pd
 
 
 def swap_labels(h5, frame_number, h5_filename):
+    """
+    Swap the labels for mis-tracked points on the animals for a single frame. Only works for two tracked animals.
+    More than two animals to come in the future
+    :param h5: the H5 data (not file) with the tracked points
+    :param frame_number: the frame number
+    :param h5_filename: the filepath for the H5 file
+    :return: Saves the data (by overwriting the H5 file)
+    """
     scorer = h5.columns.get_level_values('scorer').unique().item()
     bodyparts = h5.columns.get_level_values('bodyparts').unique().to_list()
     individuals = h5.columns.get_level_values('individuals').unique().to_list()
@@ -24,6 +32,15 @@ def swap_labels(h5, frame_number, h5_filename):
 
 
 def swap_label_sequences(h5, from_frame, to_frame, h5_filename):
+    """
+    Swap the labels for mis-tracked points on the animals for a sequence of frames. Only works for two tracked animals.
+    More than two animals to come in the future
+    :param h5: the H5 data (not file) with the tracked points
+    :param from_frame: the frame number to start from for the sequence to swap
+    :param to_frame: the frame number to end for the sequence to swap
+    :param h5_filename: the filepath for the H5 file
+    :return: Saves the data (by overwriting the H5 file)
+    """
     scorer = h5.columns.get_level_values('scorer').unique().item()
     bodyparts = h5.columns.get_level_values('bodyparts').unique().to_list()
     individuals = h5.columns.get_level_values('individuals').unique().to_list()

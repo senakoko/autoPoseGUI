@@ -3,6 +3,13 @@ import yaml
 
 
 def last_frame_number(frame_number, video_file):
+    """
+    Saves the frame number for the video when the GUI is cancelled. It allows the GUI to continue from where it stopped
+    in the previous session
+    :param frame_number: the last frame number when the GUI is closed
+    :param video_file: the name of the video file
+    :return:
+    """
     destination_file = Path('.') / 'last_video_frame.yaml'
 
     video_frame = {f"{video_file}": frame_number}

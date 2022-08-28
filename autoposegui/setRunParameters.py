@@ -2,24 +2,29 @@ from easydict import EasyDict as eDict
 
 
 def set_run_parameters(parameters=None):
+    """
+    The parameters are defined in this file
+    :param parameters: the parameters used throughout the package
+    :return:
+    """
     if isinstance(parameters, dict):
         parameters = eDict(parameters)
     else:
         parameters = eDict()
 
-    scale_factor = 0.5
+    scale_factor = 0.5  # the scale factor to resize the image. O.5 is recommended
 
-    canvas_width = 800
+    canvas_width = 800  # the width for the canvas
 
-    large_font = 50
+    large_font = 50  # the font for most of the buttons
 
-    mid_font = 20
+    mid_font = 20  # the font for most of the input boxes
 
-    small_font = 10
+    small_font = 10  # the font for some texts
 
-    smaller_font = 5
+    smaller_font = 5  # the font for some texts
 
-    error_font = 100
+    error_font = 100  # the font for the error messages that are displayed
 
     if 'scale_factor' not in parameters.keys():
         parameters.scale_factor = scale_factor
