@@ -54,7 +54,15 @@ def main_gui():
                          background_color='white', text_color='black', font=parameters.small_font),
                    sg.FileBrowse(size=(parameters.small_font, 1), font=parameters.small_font,
                                  initial_folder=h5files_main_path, file_types=(("H5 files", "*.h5"),))],
-                  [sg.Text('', size=(0, 1), key='Output', font=parameters.mid_font)]
+                  [sg.Text('', size=(0, 1), key='Output', font=parameters.mid_font),
+                   sg.Button('Jump Backward', key='Jump_Backward', enable_events=True, size=parameters.small_font,
+                             auto_size_button=True, font=parameters.small_font),
+                   sg.In(size=(parameters.small_font, 1), enable_events=True, key='Jump_Number',
+                         font=parameters.large_font, background_color='white',
+                         text_color='black'),
+                   sg.Button('Jump Forward', key='Jump_Forward', enable_events=True, size=parameters.small_font,
+                             auto_size_button=True, font=parameters.small_font)
+                   ]
                   ]
 
     # Left Layout ############################################################################
@@ -114,11 +122,18 @@ def main_gui():
         [sg.Text('Select Animal', font=parameters.large_font)], animals_layout, [bodyparts_layout],
         [sg.Button('Done Labeling', enable_events=True, key='Done_Labeling', font=parameters.large_font)],
         [sg.HSeparator()],
-        [sg.Text('Propagate Rightly Labeled Previous or Next Frame', font=parameters.large_font)],
-        [sg.Button('Propagate Previous Tracking', font=parameters.large_font, enable_events=True,
-                   key="Propagate_Forward")],
-        [sg.Button('Propagate Next Tracking', font=parameters.large_font, enable_events=True,
-                   key="Propagate_Backward")],
+        [sg.Text('Propagate Rightly Labeled Forward or Backward', font=parameters.small_font)],
+        [sg.Button('Propagate Forward', font=parameters.mid_font, enable_events=True,
+                   key="Propagate_Forward"),
+         sg.In(size=(parameters.small_font, 1), enable_events=True, key='Prop_Forward_Steps',
+               font=parameters.mid_font, background_color='white',
+               text_color='black')],
+        [sg.Button('Propagate Backward', font=parameters.mid_font, enable_events=True,
+                   key="Propagate_Backward"),
+         sg.In(size=(parameters.small_font, 1), enable_events=True, key='Prop_Backward_Steps',
+               font=parameters.mid_font, background_color='white',
+               text_color='black')
+         ],
         [sg.HSeparator()]
     ]
 
@@ -311,6 +326,82 @@ def main_gui():
             except UnboundLocalError:
                 sg.popup_error('Load the Video first', font=parameters.error_font)
 
+        # Jump forward a set number of frames
+        if event == 'Jump_Forward':
+            try:
+                val_num = values['Jump_Number']
+                if val_num == '':
+                    val_num = '1'
+                else:
+                    val_num = val_num
+                frame_number += int(val_num)
+                # Define boundary for video file
+                if frame_number > length:
+                    frame_number = length - 1
+                slider.Update(value=frame_number)
+                if values['Go_To']:
+                    goto_number = window['Go_To']
+                    goto_number.Update(value=frame_number)
+                cap.set(1, frame_number)
+                ret, image = cap.read()
+                if values["Files_H5"]:
+                    image = plot_tracked_points(image, h5, frame_number, skeleton)
+                    image = process_frame(image, scale_factor=scale_factor)
+                    imgbytes = cv2.imencode('.png', image)[1].tobytes()
+                    window["Graph"].draw_image(data=imgbytes, location=(0, parameters.canvas_width))
+                    # window["Image"].update(data=imgbytes)
+                    window["Output"].update(f"Frames: {frame_number} / {length}")
+                else:
+                    image = process_frame(image, scale_factor=scale_factor)
+                    imgbytes = cv2.imencode('.png', image)[1].tobytes()
+                    window["Graph"].draw_image(data=imgbytes, location=(0, parameters.canvas_width))
+                    # window["Image"].update(data=imgbytes)
+                    window["Output"].update(f"Frames: {frame_number} / {length}")
+            except UnboundLocalError:
+                sg.popup_error('Load the Video first', font=parameters.error_font)
+            except AttributeError:
+                sg.popup_error('Loaded the Last Frame', font=parameters.error_font)
+            except ValueError:
+                sg.popup_error('Number MUST BE Positive', font=parameters.error_font)
+
+        # Jump backward a set number of frames
+        if event == 'Jump_Backward':
+            try:
+                val_num = values['Jump_Number']
+                if val_num == '':
+                    val_num = '1'
+                else:
+                    val_num = val_num
+                frame_number -= int(val_num)
+                # Define boundary for video file
+                if frame_number < 0:
+                    frame_number = 0
+                slider.Update(value=frame_number)
+                if values['Go_To']:
+                    goto_number = window['Go_To']
+                    goto_number.Update(value=frame_number)
+                cap.set(1, frame_number)
+                ret, image = cap.read()
+                if values["Files_H5"]:
+                    image = plot_tracked_points(image, h5, frame_number, skeleton)
+                    image = process_frame(image, scale_factor=scale_factor)
+                    imgbytes = cv2.imencode('.png', image)[1].tobytes()
+                    window["Graph"].draw_image(data=imgbytes, location=(0, parameters.canvas_width))
+                    # window["Image"].update(data=imgbytes)
+                    window["Output"].update(f"Frames: {frame_number} / {length}")
+                else:
+                    image = process_frame(image, scale_factor=scale_factor)
+                    imgbytes = cv2.imencode('.png', image)[1].tobytes()
+                    window["Graph"].draw_image(data=imgbytes, location=(0, parameters.canvas_width))
+                    # window["Image"].update(data=imgbytes)
+                    window["Output"].update(f"Frames: {frame_number} / {length}")
+            except UnboundLocalError:
+                sg.popup_error('Load the Video first', font=parameters.error_font)
+            except AttributeError:
+                sg.popup_error('Loaded the Last Frame', font=parameters.error_font)
+            except ValueError:
+                sg.popup_error('Number MUST BE Positive', font=parameters.error_font)
+
         # Going to a specific frame in the video
         if event == 'Go_To':
             try:
@@ -451,7 +542,13 @@ def main_gui():
         # Propagate rightly tracked body points from the previous image to the current one
         if event == "Propagate_Forward":
             try:
-                propagate_frame(h5, frame_number, h5_filename, 'forward')
+                steps = values['Prop_Forward_Steps']
+                if steps == '':
+                    steps = '1'
+                else:
+                    steps = steps
+                steps = int(steps)
+                propagate_frame(h5, frame_number, h5_filename, 'forward', steps)
                 h5 = pd.read_hdf(h5_filename)
                 cap.set(1, frame_number)
                 ret, image = cap.read()
@@ -464,7 +561,13 @@ def main_gui():
 
         if event == "Propagate_Backward":
             try:
-                propagate_frame(h5, frame_number, h5_filename, 'backward')
+                steps = values['Prop_Backward_Steps']
+                if steps == '':
+                    steps = '1'
+                else:
+                    steps = steps
+                steps = int(steps)
+                propagate_frame(h5, frame_number, h5_filename, 'backward', steps)
                 h5 = pd.read_hdf(h5_filename)
                 cap.set(1, frame_number)
                 ret, image = cap.read()

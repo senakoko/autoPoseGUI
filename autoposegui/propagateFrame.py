@@ -1,14 +1,15 @@
 import pandas as pd
 
 
-def propagate_frame(h5, frame_number, h5_filename, forward_backward='forward'):
+def propagate_frame(h5, frame_number, h5_filename, forward_backward='forward', steps=1):
     """
-    Propagate rightly tracked body points forward or backward. Hence, either update the current frame with the previous
-    tracked points or update the current frame with the next tracked points
+    Propagate rightly tracked body points forward or backward. Hence, update the next or previous N number of frames
+    from the current one. The "N" is defined by the steps
     :param h5: the H5 data (not the filepath)
     :param frame_number: the frame number for the current image
     :param h5_filename: the filepath for the H5 file
     :param forward_backward: propagate forward or backward
+    :param steps: the number of frames to update from the current one
     :return:
     """
     scorer = h5.columns.get_level_values('scorer').unique().item()
@@ -19,9 +20,9 @@ def propagate_frame(h5, frame_number, h5_filename, forward_backward='forward'):
     for i in range(len(individuals)):
         data = h5[scorer][individuals[i]].values
         if forward_backward == 'backward':
-            data[frame_number, :] = data[frame_number + 1, :]
+            data[frame_number - steps: frame_number, :] = data[frame_number, :]
         else:
-            data[frame_number, :] = data[frame_number - 1, :]
+            data[frame_number + 1: frame_number + steps, :] = data[frame_number, :]
         df = pd.DataFrame(data)
         data_df = pd.concat((data_df, df), axis=1, ignore_index=True)
 
