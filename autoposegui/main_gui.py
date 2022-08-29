@@ -11,7 +11,8 @@ from lastFrameNumber import last_frame_number
 from relabelPoints import relabel_points
 from updateH5file import update_h5file
 from setRunParameters import set_run_parameters
-from propagatePreviousFrame import propagate_previous_frame
+from propagateFrame import propagate_frame
+from sys import platform
 
 
 def main_gui():
@@ -113,8 +114,11 @@ def main_gui():
         [sg.Text('Select Animal', font=parameters.large_font)], animals_layout, [bodyparts_layout],
         [sg.Button('Done Labeling', enable_events=True, key='Done_Labeling', font=parameters.large_font)],
         [sg.HSeparator()],
-        [sg.Text('Propagate Rightly Labeled Previous Frame', font=parameters.large_font)],
-        [sg.Button('Propagate', font=parameters.large_font, enable_events=True, key="Propagate")],
+        [sg.Text('Propagate Rightly Labeled Previous or Next Frame', font=parameters.large_font)],
+        [sg.Button('Propagate Previous Tracking', font=parameters.large_font, enable_events=True,
+                   key="Propagate_Forward")],
+        [sg.Button('Propagate Next Tracking', font=parameters.large_font, enable_events=True,
+                   key="Propagate_Backward")],
         [sg.HSeparator()]
     ]
 
@@ -139,8 +143,15 @@ def main_gui():
     window = sg.Window(title='AutoPoseGUI', layout=main_layout, finalize=True,
                        return_keyboard_events=True, use_default_focus=True)
     graph = window['Graph']
-    window.bind('<Button-2>', '+RIGHT CLICK+')
-    graph.bind('<Button-2>', '+RIGHT CLICK+')
+    if platform == 'linux' or platform == 'linux2':
+        mouse_right_click = '<Button-3>'
+    elif platform == "darwin":
+        mouse_right_click = '<Button-2>'
+    elif platform == "win32":
+        mouse_right_click = '<Button-3>'
+
+    window.bind(mouse_right_click, '+RIGHT CLICK+')
+    graph.bind(mouse_right_click, '+RIGHT CLICK+')
     listbox = window['Bodypart']
     dragging = False
     start_point = end_point = None
@@ -438,9 +449,22 @@ def main_gui():
                 sg.popup_error('Load the Video first', font=parameters.error_font)
 
         # Propagate rightly tracked body points from the previous image to the current one
-        if event == "Propagate":
+        if event == "Propagate_Forward":
             try:
-                propagate_previous_frame(h5, frame_number, h5_filename)
+                propagate_frame(h5, frame_number, h5_filename, 'forward')
+                h5 = pd.read_hdf(h5_filename)
+                cap.set(1, frame_number)
+                ret, image = cap.read()
+                image = plot_tracked_points(image, h5, frame_number, skeleton)
+                image = process_frame(image)
+                imgbytes = cv2.imencode('.png', image)[1].tobytes()
+                window["Graph"].draw_image(data=imgbytes, location=(0, parameters.canvas_width))
+            except UnboundLocalError:
+                sg.popup_error('Load the Video first', font=parameters.error_font)
+
+        if event == "Propagate_Backward":
+            try:
+                propagate_frame(h5, frame_number, h5_filename, 'backward')
                 h5 = pd.read_hdf(h5_filename)
                 cap.set(1, frame_number)
                 ret, image = cap.read()
