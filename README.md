@@ -24,3 +24,6 @@ Make sure you are in the autoposegui folder
 cd autoposegui
 python main_gui.py
 ```
+
+### Note:
+Edit the config.yaml file to match your settings
