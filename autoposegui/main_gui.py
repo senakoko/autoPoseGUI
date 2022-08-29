@@ -52,7 +52,7 @@ def main_gui():
                    sg.In(size=(parameters.large_font, 1), enable_events=True, key="Files_H5", expand_x=True,
                          background_color='white', text_color='black', font=parameters.small_font),
                    sg.FileBrowse(size=(parameters.small_font, 1), font=parameters.small_font,
-                                 initial_folder=h5files_main_path)],
+                                 initial_folder=h5files_main_path, file_types=(("H5 files", "*.h5"),))],
                   [sg.Text('', size=(0, 1), key='Output', font=parameters.mid_font)]
                   ]
 
@@ -177,8 +177,9 @@ def main_gui():
                 slider.Update(range=(0, length))
                 # Load the last frame from when the GUI was closed in the previous session
                 if last_frame_path.exists():
-                    frame_number = last_frame_data[vid_filename]
-                    cap.set(1, frame_number)
+                    if vid_filename in last_frame_data.keys():
+                        frame_number = last_frame_data[vid_filename]
+                        cap.set(1, frame_number)
                     ret, image = cap.read()
                 else:
                     ret, image = cap.read()
