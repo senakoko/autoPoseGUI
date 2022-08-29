@@ -1,5 +1,13 @@
-### Define the animals in the H5 file and the body parts that were labeled
+### Define where most of your videos and H5 files are located. The GUI uses this information as the initial folder to
+### open the file browser
 
+videos_main_path:
+  - /mnt/Liu_Lab/Prairie_Vole_Data/Sena/Personality_traits/
+
+h5files_path:
+  - /mnt/Liu_Lab/Prairie_Vole_Data/Sena/Personality_traits/
+
+### Define the animals in the H5 files and the body parts that were labeled
 animals:
   - ind1
   - ind2

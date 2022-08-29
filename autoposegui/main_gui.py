@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 import cv2
+import os
 import yaml
 from pathlib import Path
 import pandas as pd
@@ -18,17 +19,40 @@ def main_gui():
     sg.theme('DarkAmber')
     parameters = set_run_parameters()
     scale_factor = parameters.scale_factor
+
+    # Using Configuration Files ############################################################################
+    config_path = Path('.') / 'config.yaml'
+
+    with open(config_path, 'r') as fr:
+        config = yaml.load(fr, Loader=yaml.FullLoader)
+
+    last_frame_path = Path('.') / 'last_video_frame.yaml'
+
+    if last_frame_path.exists():
+        with open(last_frame_path, 'r') as fr:
+            last_frame_data = yaml.load(fr, Loader=yaml.FullLoader)
+
+    videos_main_path = str(config['videos_main_path'][0])
+    h5files_main_path = str(config['h5files_path'][0])
+
+    if not os.path.exists(videos_main_path):
+        videos_main_path = ""
+    if not os.path.exists(h5files_main_path):
+        h5files_main_path = ""
+
     # Layout #######################################################################################################
 
     # Top Layout ############################################################################
     top_layout = [[sg.Text('Video FilePath', font=parameters.small_font),
                    sg.In(size=(parameters.large_font, 1), enable_events=True, key="Files_Vid", expand_x=True,
                          background_color='white', text_color='black', font=parameters.small_font),
-                   sg.FileBrowse(size=(parameters.small_font, 1), font=parameters.smaller_font)],
+                   sg.FileBrowse(size=(parameters.small_font, 1), font=parameters.smaller_font,
+                                 initial_folder=videos_main_path)],
                   [sg.Text('H5 FilePath', font=parameters.small_font),
                    sg.In(size=(parameters.large_font, 1), enable_events=True, key="Files_H5", expand_x=True,
                          background_color='white', text_color='black', font=parameters.small_font),
-                   sg.FileBrowse(size=(parameters.small_font, 1), font=parameters.small_font)],
+                   sg.FileBrowse(size=(parameters.small_font, 1), font=parameters.small_font,
+                                 initial_folder=h5files_main_path)],
                   [sg.Text('', size=(0, 1), key='Output', font=parameters.mid_font)]
                   ]
 
@@ -60,18 +84,6 @@ def main_gui():
                    font=parameters.small_font)
          ]
     ]
-
-    # Using Configuration Files ############################################################################
-    config_path = Path('.') / 'config.yaml'
-
-    with open(config_path, 'r') as fr:
-        config = yaml.load(fr, Loader=yaml.FullLoader)
-
-    last_frame_path = Path('.') / 'last_video_frame.yaml'
-
-    if last_frame_path.exists():
-        with open(last_frame_path, 'r') as fr:
-            last_frame_data = yaml.load(fr, Loader=yaml.FullLoader)
 
     # Right Layout ############################################################################
     body_parts = config['body_parts']
