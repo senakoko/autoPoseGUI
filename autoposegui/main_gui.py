@@ -223,7 +223,6 @@ def main_gui():
                 else:
                     bodypoints1[bpt] = start_point
                     animal_bodypoints[animal_id] = bodypoints1
-                print(animal_bodypoints)
 
         # Load the video file
         if event == 'Files_Vid':
