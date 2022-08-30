@@ -514,6 +514,8 @@ def main_gui():
                 # window["Image"].update(data=imgbytes)
             except UnboundLocalError:
                 sg.popup_error('Load the Video first', font=parameters.error_font)
+            except ValueError:
+                sg.popup_error('Load the Video first and Enter an integer values', font=parameters.error_font)
 
         # Get the frame number to start the sequence swap
         if event == 'Mark_Start':
