@@ -2,10 +2,10 @@
 ### open the file browser
 
 videos_main_path:
-  - /mnt/Liu_Lab/Prairie_Vole_Data/Sena/Personality_traits/
+  - /home/sena/Desktop/Videos_Temp/
 
 h5files_path:
-  - /mnt/Liu_Lab/Prairie_Vole_Data/Sena/Personality_traits/
+  - /home/sena/Desktop/Videos_Temp/
 
 ### Define the animals in the H5 files and the body parts that were labeled
 animals:
