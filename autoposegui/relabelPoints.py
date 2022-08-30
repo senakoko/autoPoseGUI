@@ -11,11 +11,10 @@ def relabel_points(data, config, width, scale_factor, canvas_width):
     :param canvas_width: the width of the canvas used for the main GUI
     :return: new tracked points adjusted to the actual dimensions for the video
     """
-    animals = config['animals']
     body_parts = config['body_parts']
 
     animals_bodyparts = {}
-    for an in animals:
+    for an in data.keys():
         body_pts = {}
         for bp in body_parts:
             if bp in data[an].keys():
@@ -25,7 +24,7 @@ def relabel_points(data, config, width, scale_factor, canvas_width):
         animals_bodyparts[an] = body_pts
 
     animals_bpts = {}
-    for an in animals:
+    for an in data.keys():
         body_pts = animals_bodyparts[an].values()
         pts = []
         for bpt in body_pts:

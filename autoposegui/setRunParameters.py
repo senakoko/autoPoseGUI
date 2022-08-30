@@ -12,6 +12,8 @@ def set_run_parameters(parameters=None):
     else:
         parameters = eDict()
 
+    animal_key = 'vole_d'  # key to use to save h5 files. It should match key used in the original data
+
     scale_factor = 0.5  # the scale factor to resize the image. O.5 is recommended
 
     canvas_width = 800  # the width for the canvas
@@ -25,6 +27,9 @@ def set_run_parameters(parameters=None):
     smaller_font = 5  # the font for some texts
 
     error_font = 100  # the font for the error messages that are displayed
+
+    if 'animal_key' not in parameters.keys():
+        parameters.animal_key = animal_key
 
     if 'scale_factor' not in parameters.keys():
         parameters.scale_factor = scale_factor

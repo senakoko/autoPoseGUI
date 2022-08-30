@@ -96,6 +96,9 @@ def main_gui():
 
     # Right Layout ############################################################################
     body_parts = config['body_parts']
+    animals_identity = config['animals'].copy()
+    animals_identity.append('Both')
+
     bodyparts_layout = sg.Listbox(values=body_parts, key=f'Bodypart', enable_events=True,
                                   size=(parameters.mid_font, len(body_parts)), font=parameters.small_font)
 
@@ -126,6 +129,8 @@ def main_gui():
         [sg.Button('Done Labeling', enable_events=True, key='Done_Labeling', font=parameters.large_font)],
         [sg.HSeparator()],
         [sg.Text('Propagate Rightly Labeled Forward or Backward', font=parameters.small_font)],
+        [sg.Combo(animals_identity, default_value='both', font=parameters.large_font, key="Single_Both",
+                  background_color='white', text_color='black')],
         [sg.Button('Propagate Forward', font=parameters.mid_font, enable_events=True,
                    key="Propagate_Forward"),
          sg.In(size=(parameters.small_font, 1), enable_events=True, key='Prop_Forward_Steps',
@@ -159,7 +164,7 @@ def main_gui():
     ]
 
     window = sg.Window(title='AutoPoseGUI', layout=main_layout, finalize=True,
-                       return_keyboard_events=True, use_default_focus=True)
+                       return_keyboard_events=True, use_default_focus=True, size=(1100, 995))
     graph = window['Graph']
     if platform == 'linux' or platform == 'linux2':
         mouse_right_click = '<Button-3>'
@@ -583,7 +588,8 @@ def main_gui():
                 else:
                     steps = steps
                 steps = int(steps)
-                propagate_frame(h5, frame_number, h5_filename, 'forward', steps)
+                animal_ident = window['Single_Both'].get()
+                propagate_frame(h5, frame_number, h5_filename, 'forward', steps, animal_ident)
                 h5 = pd.read_hdf(h5_filename)
                 cap.set(1, frame_number)
                 ret, image = cap.read()
