@@ -163,16 +163,20 @@ def main_gui():
         [bottom_layout]
     ]
 
-    window = sg.Window(title='AutoPoseGUI', layout=main_layout, finalize=True,
-                       return_keyboard_events=True, use_default_focus=True, size=(1100, 995))
-    graph = window['Graph']
     if platform == 'linux' or platform == 'linux2':
+        window = sg.Window(title='AutoPoseGUI', layout=main_layout, finalize=True,
+                           return_keyboard_events=True, use_default_focus=True)
         mouse_right_click = '<Button-3>'
     elif platform == "darwin":
+        window = sg.Window(title='AutoPoseGUI', layout=main_layout, finalize=True,
+                           return_keyboard_events=True, use_default_focus=True, size=parameters.main_window_size)
         mouse_right_click = '<Button-2>'
     elif platform == "win32":
+        window = sg.Window(title='AutoPoseGUI', layout=main_layout, finalize=True,
+                           return_keyboard_events=True, use_default_focus=True, size=parameters.main_window_size)
         mouse_right_click = '<Button-3>'
 
+    graph = window['Graph']
     window.bind(mouse_right_click, '+RIGHT CLICK+')
     graph.bind(mouse_right_click, '+RIGHT CLICK+')
     listbox = window['Bodypart']

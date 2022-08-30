@@ -12,6 +12,8 @@ def set_run_parameters(parameters=None):
     else:
         parameters = eDict()
 
+    main_window_size = (1100, 995)  # the size for the GUI. Mainly used if GUI is opened on MAC
+
     animal_key = 'vole_d'  # key to use to save h5 files. It should match key used in the original data
 
     scale_factor = 0.5  # the scale factor to resize the image. O.5 is recommended
