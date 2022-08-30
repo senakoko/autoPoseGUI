@@ -172,7 +172,7 @@ def main_gui():
     graph.bind(mouse_right_click, '+RIGHT CLICK+')
     listbox = window['Bodypart']
     dragging = False
-    start_point = end_point = prior_rect = None
+    start_point = None
 
     # Code to Read Files ############################################################################
 
@@ -200,11 +200,12 @@ def main_gui():
 
         if event == '-MOVE_OFF-':
             dragging = False
+            graph.Widget.config(cursor='left_ptr')
 
         if event == 'Graph':
             x, y = values["Graph"]
             if not dragging:
-                start_point = (x, y)
+                # start_point = (x, y)
                 dragging = True
                 drag_figures = graph.get_figures_at_location((x, y))
                 lastxy = x, y
@@ -223,6 +224,8 @@ def main_gui():
                 else:
                     bodypoints1[bpt] = start_point
                     animal_bodypoints[animal_id] = bodypoints1
+                print(start_point)  # Don't delete this line. It helps the GUI to be displayed properly on Linux.
+                # I don't know why but it just works.
 
         # Load the video file
         if event == 'Files_Vid':
