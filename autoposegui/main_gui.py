@@ -101,7 +101,10 @@ def main_gui():
 
     animals_layout = [
         sg.Combo(config['animals'], default_value='', font=parameters.large_font, key="Animals",
-                 background_color='white', text_color='black')]
+                 background_color='white', text_color='black'),
+        sg.Radio('Move Stuff', 1, False, key='-MOVE-', enable_events=True),
+        sg.Radio('Move Off', 1, True, key='-MOVE_OFF-', enable_events=True)
+    ]
 
     right_lower_layout = [[sg.Text('Swap Sequence of Frames', font=parameters.large_font)],
                           [sg.Button('Mark Start', enable_events=True, key='Mark_Start',
@@ -169,7 +172,7 @@ def main_gui():
     graph.bind(mouse_right_click, '+RIGHT CLICK+')
     listbox = window['Bodypart']
     dragging = False
-    start_point = end_point = None
+    start_point = end_point = prior_rect = None
 
     # Code to Read Files ############################################################################
 
@@ -191,6 +194,36 @@ def main_gui():
             except TypeError:
                 break
             break
+
+        if event == '-MOVE-':
+            graph.Widget.config(cursor='fleur')
+
+        if event == '-MOVE_OFF-':
+            dragging = False
+
+        if event == 'Graph':
+            x, y = values["Graph"]
+            if not dragging:
+                start_point = (x, y)
+                dragging = True
+                drag_figures = graph.get_figures_at_location((x, y))
+                lastxy = x, y
+
+            delta_x, delta_y = x - lastxy[0], y - lastxy[1]
+            lastxy = x, y
+            if values['-MOVE-']:
+                for fig in drag_figures:
+                    graph.move_figure(fig, delta_x, delta_y)
+                    graph.update()
+                start_point = (x, y)
+                bpt = window['Bodypart'].get()[0]
+                if animal_id == config['animals'][1]:
+                    bodypoints2[bpt] = start_point
+                    animal_bodypoints[animal_id] = bodypoints2
+                else:
+                    bodypoints1[bpt] = start_point
+                    animal_bodypoints[animal_id] = bodypoints1
+                print(animal_bodypoints)
 
         # Load the video file
         if event == 'Files_Vid':
