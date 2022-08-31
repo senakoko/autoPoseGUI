@@ -30,6 +30,9 @@ def set_run_parameters(parameters=None):
 
     error_font = 100  # the font for the error messages that are displayed
 
+    if 'main_window_size' not in parameters.keys():
+        parameters.main_window_size = main_window_size
+
     if 'animal_key' not in parameters.keys():
         parameters.animal_key = animal_key
 
