@@ -614,7 +614,8 @@ def main_gui():
                 else:
                     steps = steps
                 steps = int(steps)
-                propagate_frame(h5, frame_number, h5_filename, 'backward', steps)
+                animal_ident = window['Single_Both'].get()
+                propagate_frame(h5, frame_number, h5_filename, 'backward', steps, animal_ident)
                 h5 = pd.read_hdf(h5_filename)
                 cap.set(1, frame_number)
                 ret, image = cap.read()

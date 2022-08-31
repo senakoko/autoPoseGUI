@@ -28,7 +28,8 @@ def propagate_frame(h5, frame_number, h5_filename, forward_backward='forward', s
             else:
                 data[frame_number + 1: frame_number + steps, :] = data[frame_number, :]
         else:
-            if animal_ident in individuals:
+            v = int(animal_ident[-1:]) - 1
+            if i == v:
                 if forward_backward == 'backward':
                     data[frame_number - steps: frame_number, :] = data[frame_number, :]
                 else:
