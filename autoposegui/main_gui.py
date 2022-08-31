@@ -97,7 +97,7 @@ def main_gui():
     # Right Layout ############################################################################
     body_parts = config['body_parts']
     animals_identity = config['animals'].copy()
-    animals_identity.append('Both')
+    animals_identity.append('both')
 
     bodyparts_layout = sg.Listbox(values=body_parts, key=f'Bodypart', enable_events=True,
                                   size=(parameters.mid_font, len(body_parts)), font=parameters.small_font)
