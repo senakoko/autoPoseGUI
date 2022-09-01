@@ -371,7 +371,7 @@ def main_gui():
                 sg.popup_error('Load the Video first', font=parameters.error_font)
 
         # Jump forward a set number of frames
-        if event == 'Jump_Forward':
+        if event == 'Jump_Forward' or event.startswith('Up'):
             try:
                 val_num = values['Jump_Number']
                 if val_num == '':
@@ -409,7 +409,7 @@ def main_gui():
                 sg.popup_error('Number MUST BE Positive', font=parameters.error_font)
 
         # Jump backward a set number of frames
-        if event == 'Jump_Backward':
+        if event == 'Jump_Backward' or event.startswith('Down'):
             try:
                 val_num = values['Jump_Number']
                 if val_num == '':
